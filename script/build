@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -x
+set -e
+export APP=${1:?"app is required"}
+export VERSION=${2:?"version is required"}
+export BUILD_DIR=./build
+export RELEASE_APP_NAME=nestor
+
+rm -f "$BUILD_DIR/$APP"
+mkdir -p "$BUILD_DIR"
+
+godep go install -ldflags="-X github.com/zerobotlabs/nestor-cli/cmd.version=${VERSION}" -x -v ./...
+
+mv $GOBIN/$APP $BUILD_DIR/$RELEASE_APP_NAME
+echo "Binary built successfully: $BUILD_DIR/$RELEASE_APP_NAME"
