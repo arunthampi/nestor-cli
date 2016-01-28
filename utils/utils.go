@@ -11,7 +11,7 @@ import (
 )
 
 const nestorRoot string = ".nestor"
-const tokenFileName string = "token"
+const tokenFileName string = "login"
 
 func SaveLoginInfo(loginInfo *nestorclient.LoginInfo) error {
 	h, err := homedir.Dir()
