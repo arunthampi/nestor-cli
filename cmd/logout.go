@@ -41,12 +41,11 @@ func runLogout(cmd *cobra.Command, args []string) {
 
 	shouldLogout, err := prompt.Ask(fmt.Sprintf("Are you sure you want to log out as %s", l.Email))
 	if err != nil {
-		fmt.Printf("Unexpected error while getting your confirmation\n")
 		os.Exit(1)
 	}
 
 	if shouldLogout {
-		err = utils.RemoveToken()
+		err = utils.RemoveLoginInfo()
 		if err != nil {
 			fmt.Println(unexpectedErrorWhileLoggingOutErr)
 			os.Exit(1)

@@ -13,19 +13,48 @@ import (
 var Host string = "http://localhost:5000"
 
 type LoginInfo struct {
-	Email string `json:"email"`
-	Token string `json:"token"`
-	Err   string `json:"error"`
+	Email         string `json:"email"`
+	Token         string `json:"token"`
+	Err           string `json:"error"`
+	DefaultTeamId string
+}
+
+type Team struct {
+	Id   string `json:"uid"`
+	Url  string `json:"url"`
+	Name string `json:"name"`
 }
 
 var UnexpectedServerError error = fmt.Errorf("Unexpected response from the Nestor API. Try again after a while or contact help@asknestor.me")
 
+func GetTeams(loginInfo *LoginInfo) ([]Team, error) {
+	var teams = []Team{}
+
+	params := url.Values{
+		"Authorization": []string{loginInfo.Token},
+	}
+
+	response, err := callAPI("/teams", "GET", params, 200)
+
+	if err != nil {
+		return nil, UnexpectedServerError
+	}
+
+	if err = json.Unmarshal([]byte(response), &teams); err != nil {
+		// If JSON parsing fails that means it's a server error too
+		return nil, UnexpectedServerError
+	}
+
+	return teams, nil
+}
+
 func Login(email string, password string) (*LoginInfo, error) {
 	l := LoginInfo{Email: email}
 
-	params := url.Values{}
-	params.Set("user[email]", email)
-	params.Set("user[password]", password)
+	params := url.Values{
+		"user[email]":    []string{email},
+		"user[password]": []string{password},
+	}
 
 	response, err := callAPI("/users/issue_token", "POST", params, 200)
 
@@ -47,16 +76,7 @@ func Login(email string, password string) (*LoginInfo, error) {
 }
 
 func callAPI(path string, method string, params url.Values, expectedStatusCode int) (string, error) {
-	u, err := url.ParseRequestURI(Host)
-	if err != nil {
-		return "", err
-	}
-
-	u.Path = path
-	urlStr := fmt.Sprintf("%v", u)
-
-	client := &http.Client{}
-	params.Set("format", "json")
+	urlStr, token := parseURLStringAndToken(path, method, params)
 	r, _ := http.NewRequest(method, urlStr, strings.NewReader(params.Encode()))
 
 	if method != "GET" {
@@ -64,6 +84,11 @@ func callAPI(path string, method string, params url.Values, expectedStatusCode i
 		r.Header.Add("Content-Length", strconv.Itoa(len(params.Encode())))
 	}
 
+	if token != "" {
+		r.Header.Add("Authorization", token)
+	}
+
+	client := &http.Client{}
 	resp, err := client.Do(r)
 
 	if err != nil {
@@ -82,4 +107,28 @@ func callAPI(path string, method string, params url.Values, expectedStatusCode i
 			}
 		}
 	}
+}
+
+func parseURLStringAndToken(path string, method string, params url.Values) (string, string) {
+	var token string
+
+	u, err := url.ParseRequestURI(Host)
+	if err != nil {
+		return "", ""
+	}
+
+	params.Set("format", "json")
+	// If token is present in params, then take it out set as a header
+	if token = params.Get("Authorization"); token != "" {
+		params.Del("Authorization")
+	}
+
+	u.Path = path
+
+	if method == "GET" {
+		u.RawQuery = params.Encode()
+	}
+	urlStr := fmt.Sprintf("%v", u)
+
+	return urlStr, token
 }

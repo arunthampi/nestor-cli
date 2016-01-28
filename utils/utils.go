@@ -13,7 +13,7 @@ import (
 const nestorRoot string = ".nestor"
 const tokenFileName string = "token"
 
-func SaveToken(loginInfo *nestorclient.LoginInfo) error {
+func SaveLoginInfo(loginInfo *nestorclient.LoginInfo) error {
 	h, err := homedir.Dir()
 	if err != nil {
 		return err
@@ -56,7 +56,7 @@ func SavedLoginInfo() *nestorclient.LoginInfo {
 	return &l
 }
 
-func RemoveToken() error {
+func RemoveLoginInfo() error {
 	h, err := homedir.Dir()
 	if err != nil {
 		return err

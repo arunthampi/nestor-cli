@@ -33,6 +33,7 @@ var loginCmd = &cobra.Command{
 
 var unexpectedErrorWhileLoggingInErr error = fmt.Errorf("Unexpected error while logging in")
 var unexpectedErrorWhileLoggingOutErr error = fmt.Errorf("Unexpected error while logging out")
+var unexpectedErrorWhileFetchingTeamsErr error = fmt.Errorf("Unexpected error while fetching teams")
 var rootDir string = "/tmp"
 
 func runLogin(cmd *cobra.Command, args []string) {
@@ -50,7 +51,7 @@ func runLogin(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	err = utils.SaveToken(loginInfo)
+	err = utils.SaveLoginInfo(loginInfo)
 	if err != nil {
 		fmt.Println(unexpectedErrorWhileLoggingInErr.Error())
 		os.Exit(1)
@@ -63,7 +64,6 @@ func runLogin(cmd *cobra.Command, args []string) {
 func getEmail() string {
 	email, err := prompt.Basic("Your email: ", true)
 	if err != nil {
-		fmt.Printf("Unexpected error while getting your email")
 		os.Exit(1)
 	}
 
@@ -74,7 +74,6 @@ func getEmail() string {
 func getPassword() string {
 	password, err := prompt.Password("Your password (if you're not sure what your password is, set it at https://www.asknestor.me/users/me/edit): ")
 	if err != nil {
-		fmt.Printf("Unexpected error while getting your password")
 		os.Exit(1)
 	}
 
