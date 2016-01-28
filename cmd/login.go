@@ -34,7 +34,6 @@ var loginCmd = &cobra.Command{
 var unexpectedErrorWhileLoggingInErr error = fmt.Errorf("Unexpected error while logging in")
 var unexpectedErrorWhileLoggingOutErr error = fmt.Errorf("Unexpected error while logging out")
 var unexpectedErrorWhileFetchingTeamsErr error = fmt.Errorf("Unexpected error while fetching teams")
-var rootDir string = "/tmp"
 
 func runLogin(cmd *cobra.Command, args []string) {
 	if loginInfo := utils.SavedLoginInfo(); loginInfo != nil {
@@ -58,6 +57,9 @@ func runLogin(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Printf("Successfully logged in as %s\n", email)
+
+	// Make user pick a default team right at the beginning
+	runTeam(cmd, args)
 }
 
 // Prompts the user for an email
