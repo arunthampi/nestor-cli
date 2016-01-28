@@ -15,15 +15,13 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"os"
-	"path"
 
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/Bowery/prompt"
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/spf13/cobra"
 	"github.com/zerobotlabs/nestor-cli/nestorclient"
+	"github.com/zerobotlabs/nestor-cli/utils"
 )
 
 // loginCmd represents the login command
@@ -37,11 +35,8 @@ var unexpectedErrorWhileLoggingInErr error = fmt.Errorf("Unexpected error while 
 var unexpectedErrorWhileLoggingOutErr error = fmt.Errorf("Unexpected error while logging out")
 var rootDir string = "/tmp"
 
-const nestorRoot string = ".nestor"
-const tokenFileName string = "token"
-
 func runLogin(cmd *cobra.Command, args []string) {
-	if loginInfo := savedLoginInfo(); loginInfo != nil {
+	if loginInfo := utils.SavedLoginInfo(); loginInfo != nil {
 		fmt.Printf("You are already logged in as %s. To logout, type \"nestor logout\"\n", loginInfo.Email)
 		os.Exit(1)
 	}
@@ -55,7 +50,7 @@ func runLogin(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	err = saveToken(loginInfo)
+	err = utils.SaveToken(loginInfo)
 	if err != nil {
 		fmt.Println(unexpectedErrorWhileLoggingInErr.Error())
 		os.Exit(1)
@@ -84,39 +79,6 @@ func getPassword() string {
 	}
 
 	return password
-}
-
-func saveToken(loginInfo *nestorclient.LoginInfo) error {
-	parentDir := path.Join("/tmp", nestorRoot)
-	err := os.MkdirAll(parentDir, 0755)
-	if err != nil {
-		return err
-	}
-
-	loginJson, err := json.Marshal(loginInfo)
-	if err != nil {
-		return err
-	}
-
-	p := path.Join(parentDir, tokenFileName)
-	return ioutil.WriteFile(p, loginJson, 0644)
-}
-
-func savedLoginInfo() *nestorclient.LoginInfo {
-	var l nestorclient.LoginInfo
-
-	p := path.Join("/tmp", nestorRoot, tokenFileName)
-
-	loginJson, err := ioutil.ReadFile(p)
-	if err != nil {
-		return nil
-	}
-
-	if err := json.Unmarshal(loginJson, &l); err != nil {
-		return nil
-	}
-
-	return &l
 }
 
 func init() {

@@ -17,11 +17,11 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path"
 
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/Bowery/prompt"
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/spf13/cobra"
 	"github.com/zerobotlabs/nestor-cli/nestorclient"
+	"github.com/zerobotlabs/nestor-cli/utils"
 )
 
 // logoutCmd represents the logout command
@@ -34,7 +34,7 @@ var logoutCmd = &cobra.Command{
 func runLogout(cmd *cobra.Command, args []string) {
 	var l *nestorclient.LoginInfo
 
-	if l = savedLoginInfo(); l == nil {
+	if l = utils.SavedLoginInfo(); l == nil {
 		fmt.Printf("You are not logged in. To login, type \"nestor login\"\n")
 		os.Exit(1)
 	}
@@ -46,7 +46,7 @@ func runLogout(cmd *cobra.Command, args []string) {
 	}
 
 	if shouldLogout {
-		err = removeToken()
+		err = utils.RemoveToken()
 		if err != nil {
 			fmt.Println(unexpectedErrorWhileLoggingOutErr)
 			os.Exit(1)
@@ -57,22 +57,6 @@ func runLogout(cmd *cobra.Command, args []string) {
 	}
 }
 
-func removeToken() error {
-	p := path.Join("/tmp", nestorRoot, tokenFileName)
-	return os.Remove(p)
-}
-
 func init() {
 	RootCmd.AddCommand(logoutCmd)
-
-	// Here you will define your flags and configuration settings.
-
-	// Cobra supports Persistent Flags which will work for this command
-	// and all subcommands, e.g.:
-	// logoutCmd.PersistentFlags().String("foo", "", "A help for foo")
-
-	// Cobra supports local flags which will only run when this command
-	// is called directly, e.g.:
-	// logoutCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-
 }
