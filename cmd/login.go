@@ -33,7 +33,8 @@ var loginCmd = &cobra.Command{
 	Run:   runLogin,
 }
 
-var unexpectedErrorWhileSavingTokenErr error = fmt.Errorf("Unexpected error while saving authentication token")
+var unexpectedErrorWhileLoggingInErr error = fmt.Errorf("Unexpected error while logging in")
+var unexpectedErrorWhileLoggingOutErr error = fmt.Errorf("Unexpected error while logging out")
 var rootDir string = "/tmp"
 
 const nestorRoot string = ".nestor"
@@ -56,7 +57,7 @@ func runLogin(cmd *cobra.Command, args []string) {
 
 	err = saveToken(loginInfo)
 	if err != nil {
-		fmt.Println(unexpectedErrorWhileSavingTokenErr.Error())
+		fmt.Println(unexpectedErrorWhileLoggingInErr.Error())
 		os.Exit(1)
 	}
 
@@ -102,7 +103,7 @@ func saveToken(loginInfo *nestorclient.LoginInfo) error {
 }
 
 func savedLoginInfo() *nestorclient.LoginInfo {
-	var loginInfo nestorclient.LoginInfo
+	var l nestorclient.LoginInfo
 
 	p := path.Join("/tmp", nestorRoot, tokenFileName)
 
@@ -111,11 +112,11 @@ func savedLoginInfo() *nestorclient.LoginInfo {
 		return nil
 	}
 
-	if err := json.Unmarshal(loginJson, &loginInfo); err != nil {
+	if err := json.Unmarshal(loginJson, &l); err != nil {
 		return nil
 	}
 
-	return &loginInfo
+	return &l
 }
 
 func init() {
