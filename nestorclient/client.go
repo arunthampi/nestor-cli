@@ -48,6 +48,49 @@ func GetTeams(loginInfo *LoginInfo) ([]Team, error) {
 	return teams, nil
 }
 
+func HydrateApp(app *App, loginInfo *LoginInfo) error {
+	params := url.Values{
+		"Authorization":  []string{loginInfo.Token},
+		"app[permalink]": []string{app.Permalink},
+	}
+
+	response, err := callAPI(fmt.Sprintf("/teams/%s/apps/search", loginInfo.DefaultTeamId), "GET", params, 200)
+
+	if err != nil {
+		return UnexpectedServerError
+	}
+
+	if err = json.Unmarshal([]byte(response), app); err != nil {
+		// If JSON parsing fails that means it's a server error too
+		return UnexpectedServerError
+	}
+
+	return nil
+}
+
+func UploadUrl(loginInfo *LoginInfo) (*url.URL, error) {
+	type _urlPayload struct {
+		Url string `json:"url"`
+	}
+
+	var urlPayload _urlPayload
+
+	params := url.Values{
+		"Authorization": []string{loginInfo.Token},
+	}
+	response, err := callAPI(fmt.Sprintf("/teams/%s/apps/issue_upload_url", loginInfo.DefaultTeamId), "POST", params, 200)
+	if err != nil {
+		return nil, UnexpectedServerError
+	}
+
+	if err = json.Unmarshal([]byte(response), &urlPayload); err != nil {
+		// If JSON parsing fails that means it's a server error too
+		return nil, UnexpectedServerError
+	}
+
+	return url.Parse(urlPayload.Url)
+}
+
 func Login(email string, password string) (*LoginInfo, error) {
 	l := LoginInfo{Email: email}
 
