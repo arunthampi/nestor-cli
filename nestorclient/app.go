@@ -23,9 +23,9 @@ type App struct {
 	Name            string   `json:"name"`
 	Description     string   `json:"description"`
 	Permalink       string   `json:"permalink"`
-	Public          string   `json:"public"`
+	Public          bool     `json:"public"`
 	EnvironmentKeys []string `json:"environment_keys"`
-	ContentsSha256  string   `json:"sha_256"`
+	RemoteSha256    string   `json:"sha_256"`
 	GitRevision     string   `json:"git_revision"`
 	UploadKey       string
 	LocalSha256     string
