@@ -8,7 +8,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/mitchellh/go-homedir"
+	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/mitchellh/go-homedir"
 	"github.com/zerobotlabs/nestor-cli/errors"
 	"github.com/zerobotlabs/nestor-cli/nestorclient"
 )
