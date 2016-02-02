@@ -77,21 +77,25 @@ func runSave(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	fmt.Printf("Generating zip...\n")
-	zip, err := app.ZipBytes()
+	fmt.Printf("Calculating SHA256 of artifact...\n")
+	err = app.CalculateLocalSha256()
 	if err != nil {
-		fmt.Printf("Error creating a zip of your app's deployment artifact\n")
+		fmt.Printf("Error while calculating SHA256 of artifact\n")
 		os.Exit(1)
 	}
 
-	app.LocalSha256 = utils.Sha256(zip)
+	if app.LocalSha256 != app.RemoteSha256 {
+		fmt.Printf("Generating zip...\n")
+		zip, err := app.ZipBytes()
+		if err != nil {
+			fmt.Printf("Error creating a zip of your app's deployment artifact\n")
+			os.Exit(1)
+		}
 
-	if app.LocalSha256 != app.ContentsSha256 {
 		fmt.Printf("Uploading zip...\n")
-
-		// Upload to S3
+		// Upload app contents
 		buffer := bytes.NewBuffer(zip)
-		err := app.Upload(buffer, l)
+		err = app.Upload(buffer, l)
 		if err != nil {
 			fmt.Printf("Error while uploading deployment artifact: %+v\n", err)
 			os.Exit(1)

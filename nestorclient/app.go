@@ -2,6 +2,8 @@ package nestorclient
 
 import (
 	"bytes"
+	"crypto/sha256"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -27,8 +29,8 @@ type App struct {
 	EnvironmentKeys []string `json:"environment_keys"`
 	RemoteSha256    string   `json:"sha_256"`
 	GitRevision     string   `json:"git_revision"`
-	UploadKey       string
 	LocalSha256     string
+	UploadKey       string
 	ManifestPath    string
 	ArtifactPath    string
 }
@@ -133,8 +135,6 @@ func (a *App) Zip() (io.Reader, error) {
 	buf := new(bytes.Buffer)
 	zip := archive.NewZipWriter(buf)
 
-	zip.AddBytes("index.js", shim.MustAsset("index.js"))
-
 	if err := zip.AddDir(a.ArtifactPath); err != nil {
 		return nil, err
 	}
@@ -144,6 +144,34 @@ func (a *App) Zip() (io.Reader, error) {
 	}
 
 	return buf, nil
+}
+
+func (a *App) CalculateLocalSha256() error {
+	h := sha256.New()
+
+	walkFunc := func(p string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+		if info.Mode().IsRegular() {
+			contents, err := ioutil.ReadFile(p)
+			if err != nil {
+				return err
+			}
+			h.Write(contents)
+		}
+
+		return nil
+	}
+
+	err := filepath.Walk(a.ArtifactPath, walkFunc)
+	if err != nil {
+		return err
+	}
+
+	a.LocalSha256 = base64.StdEncoding.EncodeToString(h.Sum(nil))
+
+	return nil
 }
 
 // ZipBytes returns the generated zip as bytes.
@@ -249,7 +277,12 @@ func (a *App) BuildArtifact() error {
 
 	err = filepath.Walk(a.SourcePath(), walkFunc)
 	if err != nil {
-		return nil
+		return err
+	}
+
+	err = ioutil.WriteFile(path.Join(a.ArtifactPath, "index.js"), shim.MustAsset("index.js"), 0644)
+	if err != nil {
+		return err
 	}
 
 	return nil
