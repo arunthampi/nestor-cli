@@ -4,7 +4,7 @@ ERROR_COLOR=\033[31;01m
 WARN_COLOR=\033[33;01m
 APP=nestor-cli
 REVISION=$(shell git rev-parse --short HEAD)
-BASE_VERSION=$(shell cat VERSION)
+BASE_VERSION=$(shell cat NESTOR_VERSION)
 VERSION=$(BASE_VERSION)-$(REVISION)
 
 all: build
