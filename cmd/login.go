@@ -20,8 +20,7 @@ import (
 
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/Bowery/prompt"
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/spf13/cobra"
-	"github.com/zerobotlabs/nestor-cli/nestorclient"
-	"github.com/zerobotlabs/nestor-cli/utils"
+	"github.com/zerobotlabs/nestor-cli/login"
 )
 
 // loginCmd represents the login command
@@ -36,7 +35,7 @@ var unexpectedErrorWhileLoggingOutErr error = fmt.Errorf("Unexpected error while
 var unexpectedErrorWhileFetchingTeamsErr error = fmt.Errorf("Unexpected error while fetching teams")
 
 func runLogin(cmd *cobra.Command, args []string) {
-	if loginInfo := utils.SavedLoginInfo(); loginInfo != nil {
+	if loginInfo := login.SavedLoginInfo(); loginInfo != nil {
 		fmt.Printf("You are already logged in as %s. To logout, type \"nestor logout\"\n", loginInfo.Email)
 		os.Exit(1)
 	}
@@ -44,13 +43,13 @@ func runLogin(cmd *cobra.Command, args []string) {
 	email := getEmail()
 	password := getPassword()
 
-	loginInfo, err := nestorclient.Login(email, password)
+	loginInfo, err := login.Login(email, password)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(1)
 	}
 
-	err = utils.SaveLoginInfo(loginInfo)
+	err = loginInfo.Save()
 	if err != nil {
 		fmt.Println(unexpectedErrorWhileLoggingInErr.Error())
 		os.Exit(1)

@@ -1,4 +1,4 @@
-package nestorclient
+package app
 
 import (
 	"bytes"
@@ -17,6 +17,9 @@ import (
 	"strings"
 
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/jpillora/archive"
+	"github.com/zerobotlabs/nestor-cli/errors"
+	"github.com/zerobotlabs/nestor-cli/login"
+	"github.com/zerobotlabs/nestor-cli/nestorclient"
 	"github.com/zerobotlabs/nestor-cli/shim"
 )
 
@@ -39,10 +42,6 @@ func (a *App) SourcePath() string {
 	return path.Dir(a.ManifestPath)
 }
 
-func (a *App) FetchDetails(l *LoginInfo) error {
-	return HydrateApp(a, l)
-}
-
 func (a *App) ParseManifest() error {
 	contents, err := ioutil.ReadFile(a.ManifestPath)
 	if err != nil {
@@ -60,6 +59,49 @@ func (a *App) ParseManifest() error {
 	}
 
 	return nil
+}
+
+func (a *App) Hydrate(loginInfo *login.LoginInfo) error {
+	params := url.Values{
+		"Authorization":  []string{loginInfo.Token},
+		"app[permalink]": []string{a.Permalink},
+	}
+
+	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps/search", loginInfo.DefaultTeamId), "GET", params, 200)
+
+	if err != nil {
+		return errors.UnexpectedServerError
+	}
+
+	if err = json.Unmarshal([]byte(response), a); err != nil {
+		// If JSON parsing fails that means it's a server error too
+		return errors.UnexpectedServerError
+	}
+
+	return nil
+}
+
+func (a *App) UploadUrl(loginInfo *login.LoginInfo) (*url.URL, error) {
+	type _urlPayload struct {
+		Url string `json:"url"`
+	}
+
+	var urlPayload _urlPayload
+
+	params := url.Values{
+		"Authorization": []string{loginInfo.Token},
+	}
+	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps/issue_upload_url", loginInfo.DefaultTeamId), "POST", params, 200)
+	if err != nil {
+		return nil, errors.UnexpectedServerError
+	}
+
+	if err = json.Unmarshal([]byte(response), &urlPayload); err != nil {
+		// If JSON parsing fails that means it's a server error too
+		return nil, errors.UnexpectedServerError
+	}
+
+	return url.Parse(urlPayload.Url)
 }
 
 func (a *App) CompileCoffeescript() error {
@@ -107,8 +149,8 @@ func (a *App) CompileCoffeescript() error {
 	return nil
 }
 
-func (a *App) Upload(body io.Reader, l *LoginInfo) error {
-	uploadUrl, err := UploadUrl(l)
+func (a *App) Upload(body io.Reader, l *login.LoginInfo) error {
+	uploadUrl, err := a.UploadUrl(l)
 	if err != nil {
 		return err
 	}
@@ -189,7 +231,7 @@ func (a *App) ZipBytes() ([]byte, error) {
 	return b, nil
 }
 
-func (a *App) SaveToNestor(l *LoginInfo) error {
+func (a *App) SaveToNestor(l *login.LoginInfo) error {
 	var returnedApp App
 	var response string
 	var err error
@@ -204,13 +246,13 @@ func (a *App) SaveToNestor(l *LoginInfo) error {
 
 	// If the app hasn't been created yet, then create it, otherwise update it
 	if a.Id == 0 {
-		response, err = callAPI(fmt.Sprintf("/teams/%s/apps", l.DefaultTeamId), "POST", params, 201)
+		response, err = nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps", l.DefaultTeamId), "POST", params, 201)
 	} else {
-		response, err = callAPI(fmt.Sprintf("/teams/%s/apps/%d", l.DefaultTeamId, a.Id), "PATCH", params, 200)
+		response, err = nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps/%d", l.DefaultTeamId, a.Id), "PATCH", params, 200)
 	}
 
 	if err = json.Unmarshal([]byte(response), &returnedApp); err != nil {
-		return UnexpectedServerError
+		return errors.UnexpectedServerError
 	}
 
 	a.Id = returnedApp.Id

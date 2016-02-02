@@ -21,8 +21,8 @@ import (
 
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/Bowery/prompt"
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/spf13/cobra"
-	"github.com/zerobotlabs/nestor-cli/nestorclient"
-	"github.com/zerobotlabs/nestor-cli/utils"
+	"github.com/zerobotlabs/nestor-cli/login"
+	"github.com/zerobotlabs/nestor-cli/team"
 )
 
 // teamCmd represents the team command
@@ -33,21 +33,21 @@ var teamCmd = &cobra.Command{
 }
 
 func runTeam(cmd *cobra.Command, args []string) {
-	var l *nestorclient.LoginInfo
+	var l *login.LoginInfo
 
-	if l = utils.SavedLoginInfo(); l == nil {
+	if l = login.SavedLoginInfo(); l == nil {
 		fmt.Printf("You are not logged in. To login, type \"nestor login\"\n")
 		os.Exit(1)
 	}
 
-	teams, err := nestorclient.GetTeams(l)
+	teams, err := team.GetTeams(l)
 	if err != nil {
 		fmt.Println(unexpectedErrorWhileLoggingInErr.Error())
 		os.Exit(1)
 	}
 
 	if len(teams) == 1 {
-		saveDefaultTeam(l, teams[0])
+		teams[0].Save(l)
 	} else {
 		ok := false
 		intIndex := 0
@@ -64,11 +64,11 @@ func runTeam(cmd *cobra.Command, args []string) {
 			}
 		}
 
-		saveDefaultTeam(l, teams[intIndex-1])
+		teams[intIndex-1].Save(l)
 	}
 }
 
-func chooseTeamQuestion(teams []nestorclient.Team) string {
+func chooseTeamQuestion(teams []team.Team) string {
 	question := "Pick which team you want to set as your default: "
 	for i, team := range teams {
 		question += fmt.Sprintf("%d. %s | ", i+1, team.Name)
@@ -76,17 +76,6 @@ func chooseTeamQuestion(teams []nestorclient.Team) string {
 	question += fmt.Sprintf("Choose %d-%d: ", 1, len(teams))
 
 	return question
-}
-
-func saveDefaultTeam(l *nestorclient.LoginInfo, team nestorclient.Team) {
-	l.DefaultTeamId = team.Id
-	err := utils.SaveLoginInfo(l)
-	if err != nil {
-		fmt.Printf("Unexpected error while setting your default team\n")
-		os.Exit(1)
-	} else {
-		fmt.Printf("Set your default team as %s (%s)\n", team.Name, team.Url)
-	}
 }
 
 func init() {

@@ -20,8 +20,7 @@ import (
 
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/Bowery/prompt"
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/spf13/cobra"
-	"github.com/zerobotlabs/nestor-cli/nestorclient"
-	"github.com/zerobotlabs/nestor-cli/utils"
+	"github.com/zerobotlabs/nestor-cli/login"
 )
 
 // logoutCmd represents the logout command
@@ -32,9 +31,9 @@ var logoutCmd = &cobra.Command{
 }
 
 func runLogout(cmd *cobra.Command, args []string) {
-	var l *nestorclient.LoginInfo
+	var l *login.LoginInfo
 
-	if l = utils.SavedLoginInfo(); l == nil {
+	if l = login.SavedLoginInfo(); l == nil {
 		fmt.Printf("You are not logged in. To login, type \"nestor login\"\n")
 		os.Exit(1)
 	}
@@ -45,7 +44,7 @@ func runLogout(cmd *cobra.Command, args []string) {
 	}
 
 	if shouldLogout {
-		err = utils.RemoveLoginInfo()
+		err = login.Delete()
 		if err != nil {
 			fmt.Println(unexpectedErrorWhileLoggingOutErr)
 			os.Exit(1)
