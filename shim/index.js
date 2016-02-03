@@ -21,13 +21,9 @@ exports.handle = function(event, ctx) {
   require('script')(robot);
 
   robot.receive(message, function(done) {
-    if(done) {
-      ctx.succeed({
-        toSend: robot.toSend,
-        toReply: robot.toReply
-      })
-    } else {
-      ctx.fail();
-    }
+    ctx.succeed({
+      toSend: robot.toSend,
+      toReply: robot.toReply
+    });
   });
 }
