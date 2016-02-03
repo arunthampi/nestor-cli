@@ -2,8 +2,11 @@ package team
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
+	"os"
 
+	"github.com/olekukonko/tablewriter"
 	"github.com/zerobotlabs/nestor-cli/errors"
 	"github.com/zerobotlabs/nestor-cli/login"
 	"github.com/zerobotlabs/nestor-cli/nestorclient"
@@ -13,6 +16,27 @@ type Team struct {
 	Id   string `json:"uid"`
 	Url  string `json:"url"`
 	Name string `json:"name"`
+}
+
+func TableizeTeams(teams []Team, defaultTeamId string) *tablewriter.Table {
+	var elems [][]string
+
+	for i, t := range teams {
+		isDefault := ""
+
+		if defaultTeamId == t.Id {
+			isDefault = "*"
+		}
+
+		elems = append(elems, []string{fmt.Sprintf("%d", i+1), t.Name, isDefault})
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"No.", "Team", "Default"})
+	table.SetBorder(false)
+	table.AppendBulk(elems)
+
+	return table
 }
 
 func GetTeams(loginInfo *login.LoginInfo) ([]Team, error) {

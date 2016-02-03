@@ -47,13 +47,24 @@ func runTeam(cmd *cobra.Command, args []string) {
 	}
 
 	if len(teams) == 1 {
-		teams[0].Save(l)
+		team := teams[0]
+		err := team.Save(l)
+		if err != nil {
+			fmt.Printf("Error saving default team\n")
+			os.Exit(1)
+		} else {
+			fmt.Printf("Saved %s as your default team\n", team.Name)
+		}
 	} else {
+		table := team.TableizeTeams(teams, l.DefaultTeamId)
+		table.Render()
+		fmt.Printf("\n")
+
 		ok := false
 		intIndex := 0
 
 		for !ok {
-			index, promptErr := prompt.Basic(chooseTeamQuestion(teams), true)
+			index, promptErr := prompt.Basic(fmt.Sprintf("Pick which team you want to set as your default (1-%d): ", len(teams)), true)
 			if promptErr != nil {
 				os.Exit(1)
 			}
@@ -64,18 +75,15 @@ func runTeam(cmd *cobra.Command, args []string) {
 			}
 		}
 
-		teams[intIndex-1].Save(l)
+		team := teams[intIndex-1]
+		err := team.Save(l)
+		if err != nil {
+			fmt.Printf("Error saving default team\n")
+			os.Exit(1)
+		} else {
+			fmt.Printf("Saved %s as your default team\n", team.Name)
+		}
 	}
-}
-
-func chooseTeamQuestion(teams []team.Team) string {
-	question := "Pick which team you want to set as your default: "
-	for i, team := range teams {
-		question += fmt.Sprintf("%d. %s | ", i+1, team.Name)
-	}
-	question += fmt.Sprintf("Choose %d-%d: ", 1, len(teams))
-
-	return question
 }
 
 func init() {
