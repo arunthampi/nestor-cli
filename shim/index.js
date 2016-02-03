@@ -15,14 +15,19 @@ exports.handle = function(event, ctx) {
                     room: relaxEvent.channel_uid
                   });
   message = new TextMessage(user, relaxEvent.text);
-  robot = new Robot(relaxEvent.team_uid, relaxEvent.relax_bot_uid, 'nestorbot');
+  robot = new Robot(relaxEvent.team_uid, relaxEvent.relax_bot_uid, 'nestorbot', event.__debugMode);
   robot.adapter = new NestorAdapter(robot);
 
   require('script')(robot);
 
-  robot.receive(message);
-
-  setTimeout(function() {
-    ctx.succeed();
-  }, 30 * 1000);
+  robot.receive(message, function(done) {
+    if(done) {
+      ctx.succeed({
+        toSend: robot.toSend,
+        toReply: robot.toReply
+      })
+    } else {
+      ctx.fail();
+    }
+  });
 }
