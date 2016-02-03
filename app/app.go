@@ -275,7 +275,7 @@ func (a *App) BuildArtifact() error {
 	walkFunc := func(p string, info os.FileInfo, err error) error {
 		p = strings.TrimPrefix(p, a.SourcePath())
 
-		if (p == "/.git" || p == "/node_modules/.bin") && info.IsDir() {
+		if (p == "/.git") && info.IsDir() {
 			return filepath.SkipDir
 		}
 
