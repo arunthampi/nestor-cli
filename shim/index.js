@@ -22,8 +22,8 @@ exports.handle = function(event, ctx) {
 
   robot.receive(message, function(done) {
     ctx.succeed({
-      toSend: robot.toSend,
-      toReply: robot.toReply
+      to_send: robot.toSend,
+      to_reply: robot.toReply
     });
   });
 }
