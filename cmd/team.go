@@ -57,6 +57,7 @@ func runTeam(cmd *cobra.Command, args []string) {
 		}
 	} else {
 		table := team.TableizeTeams(teams, l.DefaultTeamId)
+		fmt.Printf("\n")
 		table.Render()
 		fmt.Printf("\n")
 

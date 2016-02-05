@@ -77,6 +77,7 @@ func runDeploy(cmd *cobra.Command, args []string) {
 	}
 
 	table := version.TableizeVersions(versions)
+	fmt.Printf("\n")
 	table.Render()
 	fmt.Printf("\n")
 
