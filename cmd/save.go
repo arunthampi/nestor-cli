@@ -109,7 +109,7 @@ func runSave(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	color.Green("+Successfully saved app to Nestor!\n")
+	color.Green("+ Successfully saved app to Nestor!\n")
 	color.Green("\nYou can test your app by running `nestor shell`\n")
 }
 
