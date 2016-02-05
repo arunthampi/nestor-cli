@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"os"
 
-	"github.com/olekukonko/tablewriter"
+	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/olekukonko/tablewriter"
 	"github.com/zerobotlabs/nestor-cli/errors"
 	"github.com/zerobotlabs/nestor-cli/login"
 	"github.com/zerobotlabs/nestor-cli/nestorclient"

@@ -19,7 +19,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/Bowery/prompt"
+	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/Bowery/prompt"
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/spf13/cobra"
 	"github.com/zerobotlabs/nestor-cli/app"
 	"github.com/zerobotlabs/nestor-cli/exec"
