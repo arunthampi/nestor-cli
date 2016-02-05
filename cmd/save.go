@@ -16,10 +16,10 @@ package cmd
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"path"
 
+	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/fatih/color"
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/spf13/cobra"
 	"github.com/zerobotlabs/nestor-cli/app"
 	"github.com/zerobotlabs/nestor-cli/login"
@@ -38,14 +38,14 @@ func runSave(cmd *cobra.Command, args []string) {
 
 	// Check if you are logged in first
 	if l = login.SavedLoginInfo(); l == nil {
-		fmt.Printf("You are not logged in. To login, type \"nestor login\"\n")
+		color.Red("You are not logged in. To login, type \"nestor login\"\n")
 		os.Exit(1)
 	}
 
 	// Check if you have a valid nestor.json file
 	nestorJsonPath, err := pathToNestorJson(args)
 	if err != nil {
-		fmt.Printf("Could not find nestor.json in the path specified\n")
+		color.Red("Could not find nestor.json in the path specified\n")
 		os.Exit(1)
 	}
 
@@ -53,7 +53,7 @@ func runSave(cmd *cobra.Command, args []string) {
 
 	err = a.ParseManifest()
 	if err != nil {
-		fmt.Printf("%s\n", err.Error())
+		color.Red("%s\n", err.Error())
 		os.Exit(1)
 	}
 
@@ -61,59 +61,56 @@ func runSave(cmd *cobra.Command, args []string) {
 	// We are ignoring the error for now but at some point we will have to show an error that is not annoying
 	err = a.Hydrate(l)
 	if err != nil {
-		fmt.Printf("Error fetching details for app\n")
+		color.Red("- Error fetching details for app\n")
 	}
 
-	fmt.Printf("Building deployment artifact...\n")
+	color.Green("+ Building deployment artifact...\n")
 	err = a.BuildArtifact()
 	if err != nil {
-		fmt.Printf("Error while building deployment artifact for your app\n")
+		color.Red("- Error while building deployment artifact for your app\n")
 	}
 
 	// Check if you need to do coffee compilation
 	err = a.CompileCoffeescript()
 	if err != nil {
-		fmt.Printf("There was an error compiling coffeescript in your app\n")
+		color.Red("- There was an error compiling coffeescript in your app\n")
 		os.Exit(1)
 	}
 
-	fmt.Printf("Calculating SHA256 of artifact...\n")
 	err = a.CalculateLocalSha256()
 	if err != nil {
-		fmt.Printf("Error while calculating SHA256 of artifact\n")
+		color.Red("- There was an error calculating whether your app needs to be uploaded\n")
 		os.Exit(1)
 	}
 
 	if a.LocalSha256 != a.RemoteSha256 {
-		fmt.Printf("Generating zip...\n")
+		color.Green("+ Generating zip...\n")
 		zip, err := a.ZipBytes()
 		if err != nil {
-			fmt.Printf("Error creating a zip of your app's deployment artifact\n")
+			color.Red("- Error creating a zip of your app's deployment artifact\n")
 			os.Exit(1)
 		}
 
-		fmt.Printf("Uploading zip...\n")
+		color.Green("+ Uploading zip...\n")
 		// Upload app contents
 		buffer := bytes.NewBuffer(zip)
 		err = a.Upload(buffer, l)
 		if err != nil {
-			fmt.Printf("Error while uploading deployment artifact: %+v\n", err)
+			color.Red("- Error while uploading deployment artifact: %+v\n", err)
 			os.Exit(1)
 		}
-	} else {
-		fmt.Printf("Not uploading your app, since there are no changes to the code\n")
 	}
 
 	// Make API call to Nestor with contents from JSON file along with S3 URL so that the API can create a functioning bot app
-	fmt.Printf("Saving app to Nestor...\n")
+	color.Green("+ Saving app to Nestor...\n")
 	err = a.SaveToNestor(l)
 	if err != nil {
-		fmt.Printf("Error while saving app to nestor: %+v\n", err)
+		color.Green("- Error while saving app to nestor: %+v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("Successfully saved app to Nestor!\n")
-	fmt.Printf("You can test your app by running `nestor shell`\n")
+	color.Green("+Successfully saved app to Nestor!\n")
+	color.Green("\nYou can test your app by running `nestor shell`\n")
 }
 
 func init() {

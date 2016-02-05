@@ -19,6 +19,7 @@ import (
 	"os"
 
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/Bowery/prompt"
+	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/fatih/color"
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/spf13/cobra"
 	"github.com/zerobotlabs/nestor-cli/login"
 )
@@ -36,7 +37,7 @@ var unexpectedErrorWhileFetchingTeamsErr error = fmt.Errorf("Unexpected error wh
 
 func runLogin(cmd *cobra.Command, args []string) {
 	if loginInfo := login.SavedLoginInfo(); loginInfo != nil {
-		fmt.Printf("You are already logged in as %s. To logout, type \"nestor logout\"\n", loginInfo.Email)
+		color.Red("You are already logged in as %s. To logout, type \"nestor logout\"\n", loginInfo.Email)
 		os.Exit(1)
 	}
 
@@ -45,17 +46,17 @@ func runLogin(cmd *cobra.Command, args []string) {
 
 	loginInfo, err := login.Login(email, password)
 	if err != nil {
-		fmt.Println(err.Error())
+		color.Red(err.Error())
 		os.Exit(1)
 	}
 
 	err = loginInfo.Save()
 	if err != nil {
-		fmt.Println(unexpectedErrorWhileLoggingInErr.Error())
+		color.Red(unexpectedErrorWhileLoggingInErr.Error())
 		os.Exit(1)
 	}
 
-	fmt.Printf("Successfully logged in as %s\n", email)
+	color.Green("Successfully logged in as %s\n", email)
 
 	// Make user pick a default team right at the beginning
 	runTeam(cmd, args)

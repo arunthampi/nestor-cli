@@ -23,6 +23,11 @@
 			"Rev": "6f97d0d3970881d3e53dd6f547a41109eb055e54"
 		},
 		{
+			"ImportPath": "github.com/fatih/color",
+			"Comment": "v0.1-5-gf773d4c",
+			"Rev": "f773d4c806cc8e4a5749d6a35e2a4bbcd71443d6"
+		},
+		{
 			"ImportPath": "github.com/hashicorp/hcl",
 			"Rev": "578dd9746824a54637686b51a41bad457a56bcef"
 		},
@@ -45,6 +50,10 @@
 			"Rev": "c81f9d71af8f8cba1466501d30326b99a4e56c19"
 		},
 		{
+			"ImportPath": "github.com/mattn/go-isatty",
+			"Rev": "7fcbc72f853b92b5720db4a6b8482be612daef24"
+		},
+		{
 			"ImportPath": "github.com/mattn/go-runewidth",
 			"Comment": "travisish-44-ge882a96",
 			"Rev": "e882a96ec18dd43fa283187b66af74497c9101c0"
@@ -60,6 +69,10 @@
 		{
 			"ImportPath": "github.com/olekukonko/tablewriter",
 			"Rev": "cca8bbc0798408af109aaaa239cbd2634846b340"
+		},
+		{
+			"ImportPath": "github.com/shiena/ansicolor",
+			"Rev": "a422bbe96644373c5753384a59d678f7d261ff10"
 		},
 		{
 			"ImportPath": "github.com/spf13/cast",

@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/Bowery/prompt"
+	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/fatih/color"
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/spf13/cobra"
 	"github.com/zerobotlabs/nestor-cli/app"
 	"github.com/zerobotlabs/nestor-cli/exec"
@@ -32,14 +33,14 @@ func runShell(cmd *cobra.Command, args []string) {
 
 	// Check if you are logged in first
 	if l = login.SavedLoginInfo(); l == nil {
-		fmt.Printf("You are not logged in. To login, type \"nestor login\"\n")
+		color.Red("You are not logged in. To login, type \"nestor login\"\n")
 		os.Exit(1)
 	}
 
 	// Check if you have a valid nestor.json file
 	nestorJsonPath, err := pathToNestorJson(args)
 	if err != nil {
-		fmt.Printf("Could not find nestor.json in the path specified\n")
+		color.Red("Could not find nestor.json in the path specified\n")
 		os.Exit(1)
 	}
 
@@ -47,7 +48,7 @@ func runShell(cmd *cobra.Command, args []string) {
 
 	err = a.ParseManifest()
 	if err != nil {
-		fmt.Printf("%s\n", err.Error())
+		color.Red("%s\n", err.Error())
 		os.Exit(1)
 	}
 
@@ -55,11 +56,11 @@ func runShell(cmd *cobra.Command, args []string) {
 	// We are ignoring the error for now but at some point we will have to show an error that is not annoying
 	err = a.Hydrate(l)
 	if err != nil {
-		fmt.Printf("Error fetching details for app\n")
+		color.Red("Error fetching details for app\n")
 	}
 
 	if a.Id == 0 {
-		fmt.Printf("You haven't saved your app yet. Run `nestor save` before you can debug your app\n")
+		color.Red("You haven't saved your app yet. Run `nestor save` before you can debug your app\n")
 		os.Exit(1)
 	}
 
@@ -81,21 +82,21 @@ func runShell(cmd *cobra.Command, args []string) {
 		output := exec.Output{}
 		err := output.Exec(&a, l, command)
 		if err != nil {
-			fmt.Printf("unexpected error while running your app. Please try again later or contact hello@asknestor.me: %+v\n", err)
+			color.Red("unexpected error while running your app. Please try again later or contact hello@asknestor.me\n", err)
 		}
 
 		if output.Logs != "" {
-			fmt.Println(output.Logs)
+			color.Yellow(output.Logs)
 		}
 
 		for _, send := range output.ToSend {
 			fmt.Println(send)
 		}
 		for _, reply := range output.ToReply {
-			fmt.Printf("<@user>: %s\n", reply)
+			color.Blue("<@user>: ")
+			fmt.Println(reply)
 		}
 	}
-
 }
 
 // shellCmd represents the shell command

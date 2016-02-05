@@ -16,6 +16,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/fatih/color"
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/jpillora/archive"
 	"github.com/zerobotlabs/nestor-cli/errors"
 	"github.com/zerobotlabs/nestor-cli/login"
@@ -126,11 +127,11 @@ func (a *App) CompileCoffeescript() error {
 		return nil
 	}
 
-	fmt.Printf("Compiling Coffeescript...\n")
+	color.Green("+ Compiling Coffeescript...\n")
 
 	binary, lookErr := exec.LookPath("coffee")
 	if lookErr != nil {
-		fmt.Printf("Could not find coffee in your $PATH. Please install coffee-script with 'npm install -g coffee-script'\n")
+		color.Red("- Could not find coffee in your $PATH. Please install coffee-script with 'npm install -g coffee-script'\n")
 		return lookErr
 	}
 

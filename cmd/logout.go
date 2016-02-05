@@ -19,6 +19,7 @@ import (
 	"os"
 
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/Bowery/prompt"
+	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/fatih/color"
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/spf13/cobra"
 	"github.com/zerobotlabs/nestor-cli/login"
 )
@@ -34,7 +35,7 @@ func runLogout(cmd *cobra.Command, args []string) {
 	var l *login.LoginInfo
 
 	if l = login.SavedLoginInfo(); l == nil {
-		fmt.Printf("You are not logged in. To login, type \"nestor login\"\n")
+		color.Red("You are not logged in. To login, type \"nestor login\"\n")
 		os.Exit(1)
 	}
 
@@ -49,7 +50,7 @@ func runLogout(cmd *cobra.Command, args []string) {
 			fmt.Println(unexpectedErrorWhileLoggingOutErr)
 			os.Exit(1)
 		}
-		fmt.Printf("Successfully logged out as %s\n", l.Email)
+		color.Green("Successfully logged out as %s\n", l.Email)
 	} else {
 		os.Exit(1)
 	}

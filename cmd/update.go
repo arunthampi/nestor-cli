@@ -15,9 +15,9 @@
 package cmd
 
 import (
-	"fmt"
 	"os"
 
+	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/fatih/color"
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/spf13/cobra"
 	"github.com/zerobotlabs/nestor-cli/update"
 )
@@ -26,14 +26,14 @@ func runUpdate(cmd *cobra.Command, args []string) {
 	newVersion, err := update.Update()
 	switch {
 	case err == update.NotAvailableErr:
-		fmt.Printf("No update available\n")
+		color.Green("No update available\n")
 		os.Exit(0)
 	case err != nil:
-		fmt.Printf("There was an error updating nestor. Please try again later or contact help@asknestor.me\n")
+		color.Red("There was an error updating nestor. Please try again later or contact help@asknestor.me\n")
 		os.Exit(1)
 	}
 
-	fmt.Printf("Updated nestor to new version: %s!\n", newVersion)
+	color.Green("Updated nestor to new version: %s!\n", newVersion)
 }
 
 // updateCmd represents the update command

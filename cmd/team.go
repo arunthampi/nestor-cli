@@ -20,6 +20,7 @@ import (
 	"strconv"
 
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/Bowery/prompt"
+	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/fatih/color"
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/spf13/cobra"
 	"github.com/zerobotlabs/nestor-cli/login"
 	"github.com/zerobotlabs/nestor-cli/team"
@@ -36,7 +37,7 @@ func runTeam(cmd *cobra.Command, args []string) {
 	var l *login.LoginInfo
 
 	if l = login.SavedLoginInfo(); l == nil {
-		fmt.Printf("You are not logged in. To login, type \"nestor login\"\n")
+		color.Red("You are not logged in. To login, type \"nestor login\"\n")
 		os.Exit(1)
 	}
 
@@ -50,10 +51,10 @@ func runTeam(cmd *cobra.Command, args []string) {
 		team := teams[0]
 		err := team.Save(l)
 		if err != nil {
-			fmt.Printf("Error saving default team\n")
+			color.Red("Error saving default team\n")
 			os.Exit(1)
 		} else {
-			fmt.Printf("Saved %s as your default team\n", team.Name)
+			color.Green("Saved %s as your default team\n", team.Name)
 		}
 	} else {
 		table := team.TableizeTeams(teams, l.DefaultTeamId)
@@ -79,10 +80,10 @@ func runTeam(cmd *cobra.Command, args []string) {
 		team := teams[intIndex-1]
 		err := team.Save(l)
 		if err != nil {
-			fmt.Printf("Error saving default team\n")
+			color.Red("Unexpected error saving your default team. Please try updating the app with `nestor update` or raise an issue at https://github.com/zerobotlabs/nestor-cli\n")
 			os.Exit(1)
 		} else {
-			fmt.Printf("Saved %s as your default team\n", team.Name)
+			color.Green("Saved %s as your default team\n", team.Name)
 		}
 	}
 }
