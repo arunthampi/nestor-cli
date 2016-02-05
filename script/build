@@ -4,12 +4,11 @@ set -e
 export APP=${1:?"app is required"}
 export VERSION=${2:?"version is required"}
 export BUILD_DIR=./build
-export RELEASE_APP_NAME=nestor
+export RELEASE_APP_NAME=nestor-dev
 
 rm -f "$BUILD_DIR/$APP"
 mkdir -p "$BUILD_DIR"
 
-godep go install -ldflags="-X github.com/zerobotlabs/nestor-cli/cmd.version=${VERSION}" -x -v ./...
+go build -ldflags="-X github.com/zerobotlabs/nestor-cli/cmd.version=${VERSION}" -x -v -o $BUILD_DIR/$RELEASE_APP_NAME github.com/zerobotlabs/nestor-cli
 
-mv $GOBIN/$APP $BUILD_DIR/$RELEASE_APP_NAME
 echo "Binary built successfully: $BUILD_DIR/$RELEASE_APP_NAME"
