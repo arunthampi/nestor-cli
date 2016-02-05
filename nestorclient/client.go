@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var Host string = "http://localhost:5000"
+var host string = "http://localhost:5000"
 
 func CallAPI(path string, method string, params url.Values, expectedStatusCode int) (string, error) {
 	urlStr, token := parseURLStringAndToken(path, method, params)
@@ -21,7 +21,7 @@ func CallAPI(path string, method string, params url.Values, expectedStatusCode i
 	}
 
 	if token != "" {
-		r.Header.Add("Authorization", token)
+		r.Header.Add("Authorization", fmt.Sprintf("Bearer %s", token))
 	}
 
 	client := &http.Client{}
@@ -48,7 +48,7 @@ func CallAPI(path string, method string, params url.Values, expectedStatusCode i
 func parseURLStringAndToken(path string, method string, params url.Values) (string, string) {
 	var token string
 
-	u, err := url.ParseRequestURI(Host)
+	u, err := url.ParseRequestURI(host)
 	if err != nil {
 		return "", ""
 	}
