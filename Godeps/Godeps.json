@@ -19,6 +19,10 @@
 			"Rev": "8929fe90cee4b2cb9deb468b51fb34eba64d1bf0"
 		},
 		{
+			"ImportPath": "github.com/equinox-io/equinox",
+			"Rev": "6f97d0d3970881d3e53dd6f547a41109eb055e54"
+		},
+		{
 			"ImportPath": "github.com/hashicorp/hcl",
 			"Rev": "578dd9746824a54637686b51a41bad457a56bcef"
 		},
