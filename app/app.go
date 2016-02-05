@@ -25,14 +25,14 @@ import (
 )
 
 type App struct {
-	Id              int64    `json:"id"`
-	Name            string   `json:"name"`
-	Description     string   `json:"description"`
-	Permalink       string   `json:"permalink"`
-	Public          bool     `json:"public"`
-	EnvironmentKeys []string `json:"environment_keys"`
-	RemoteSha256    string   `json:"sha_256"`
-	GitRevision     string   `json:"git_revision"`
+	Id              int64           `json:"id"`
+	Name            string          `json:"name"`
+	Description     string          `json:"description"`
+	Permalink       string          `json:"permalink"`
+	Public          bool            `json:"public"`
+	EnvironmentKeys map[string]bool `json:"environment_keys"`
+	RemoteSha256    string          `json:"sha_256"`
+	GitRevision     string          `json:"git_revision"`
 	LocalSha256     string
 	UploadKey       string
 	ManifestPath    string
@@ -237,12 +237,18 @@ func (a *App) SaveToNestor(l *login.LoginInfo) error {
 	var response string
 	var err error
 
+	envKeysPayload, err := json.Marshal(a.EnvironmentKeys)
+	if err != nil {
+		return err
+	}
+
 	params := url.Values{
-		"Authorization":   []string{l.Token},
-		"app[name]":       []string{a.Name},
-		"app[permalink]":  []string{a.Permalink},
-		"app[upload_key]": []string{a.UploadKey},
-		"app[sha_256]":    []string{a.LocalSha256},
+		"Authorization":         []string{l.Token},
+		"app[name]":             []string{a.Name},
+		"app[permalink]":        []string{a.Permalink},
+		"app[upload_key]":       []string{a.UploadKey},
+		"app[sha_256]":          []string{a.LocalSha256},
+		"app[environment_keys]": []string{string(envKeysPayload)},
 	}
 
 	// If the app hasn't been created yet, then create it, otherwise update it
