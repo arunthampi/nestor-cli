@@ -113,6 +113,7 @@ func runSave(cmd *cobra.Command, args []string) {
 	}
 
 	fmt.Printf("Successfully saved app to Nestor!\n")
+	fmt.Printf("You can test your app by running `nestor shell`\n")
 }
 
 func init() {
