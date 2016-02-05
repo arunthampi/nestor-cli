@@ -20,4 +20,10 @@ test:
 	@echo "$(OK_COLOR)==> Testing...$(NO_COLOR)"
 	@script/test $(TEST)
 
-.PHONY: all build clean format test
+release:
+	@script/release $(VERSION)
+
+install_equinox:
+	@script/install_equinox $(VERSION)
+
+.PHONY: all build clean test release install_equinox test

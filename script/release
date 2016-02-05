@@ -1,0 +1,16 @@
+#!/bin/bash
+
+export VERSION=${1:?"version is required"}
+export CHANNEL=stable
+export EQUINOX_APP_ID=app_34CVQima2NP
+
+echo "Installing $VERSION to $CHANNEL with EQUINOX_SIGNING_KEY_FILE"
+/usr/local/bin/equinox release \
+--version=$VERSION \
+--channel=$CHANNEL \
+--platforms="darwin_amd64 linux_amd64" \
+--signing-key=$EQUINOX_SIGNING_KEY_FILE \
+--app=$EQUINOX_APP_ID \
+--token=$EQUINOX_CREDENTIAL \
+-- -ldflags="-X github.com/zerobotlabs/nestor-cli/cmd.version=${VERSION} -X github.com/zerobotlabs/nestor-cli/exec.host=https://exec.asknestor.me -X github.com/zerobotlabs/nestor-cli/nestorclient.host=https://v2.asknestor.me" -x -v \
+github.com/zerobotlabs/nestor-cli
