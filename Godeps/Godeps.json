@@ -71,6 +71,10 @@
 			"Rev": "cca8bbc0798408af109aaaa239cbd2634846b340"
 		},
 		{
+			"ImportPath": "github.com/peterh/liner",
+			"Rev": "ad1edfd30321d8f006ccf05f1e0524adeb943060"
+		},
+		{
 			"ImportPath": "github.com/shiena/ansicolor",
 			"Rev": "a422bbe96644373c5753384a59d678f7d261ff10"
 		},
