@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/equinox-io/equinox"
+	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/fatih/color"
 )
 
 const appId = "app_34CVQima2NP"
@@ -33,6 +34,7 @@ func Update() (string, error) {
 	}
 
 	// fetch the update and apply it
+	color.Green("Updating...")
 	err = resp.Apply()
 	if err != nil {
 		return "", err
