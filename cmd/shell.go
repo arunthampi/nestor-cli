@@ -134,8 +134,7 @@ func runShell(cmd *cobra.Command, args []string) {
 				fmt.Println(send)
 			}
 			for _, reply := range output.ToReply {
-				color.Blue("<@user>: ")
-				fmt.Println(reply)
+				fmt.Printf("<@user>: %s\n", reply)
 			}
 		}
 	}
