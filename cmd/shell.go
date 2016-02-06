@@ -19,6 +19,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path"
+	"regexp"
 	"strings"
 
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/fatih/color"
@@ -47,6 +48,10 @@ func init() {
 		ioutil.WriteFile(historyFile, []byte(""), 0644)
 	}
 }
+
+var quitPattern *regexp.Regexp = regexp.MustCompile("^(quit|exit)$")
+var setEnvPattern *regexp.Regexp = regexp.MustCompile("^nestor\\.setenv ([^=]+)=(.*?)$")
+var getEnvPattern *regexp.Regexp = regexp.MustCompile("^nestor\\.getenv\\s*(.*?)$")
 
 func saveHistory(line *liner.State, hf *os.File) {
 	line.WriteHistory(hf)
@@ -108,33 +113,49 @@ func runShell(cmd *cobra.Command, args []string) {
 	for !ok {
 		if command, err := line.Prompt("nestor> "); err == nil {
 			command = strings.TrimSpace(command)
-			if command == "quit" || command == "exit" {
+
+			if command != "" {
+				line.AppendHistory(command)
+			}
+			switch {
+			case quitPattern.MatchString(command):
 				fmt.Println("Goodbye!")
 				saveHistory(line, hf)
 				os.Exit(1)
-			}
-
-			if command == "" {
+			case setEnvPattern.MatchString(command):
+				matches := setEnvPattern.FindAllStringSubmatch(command, -1)
+				resp, err := a.UpdateEnv(l, matches[0][1], matches[0][2])
+				if err != nil {
+					color.Red("There was an error setting environment variable %s for your app", matches[0][1])
+				} else {
+					fmt.Printf("Set %s to %s\n", matches[0][1], resp)
+				}
+			case getEnvPattern.MatchString(command):
+				matches := getEnvPattern.FindAllStringSubmatch(command, -1)
+				table, err := a.GetEnv(l, matches[0][1])
+				if err != nil {
+					color.Red("There was an error getting environment variable %s for your app", matches[0][1])
+				} else {
+					table.Render()
+					fmt.Printf("\n")
+				}
+			case command == "":
 				continue
-			}
-
-			output := exec.Output{}
-			err := output.Exec(&a, l, command)
-			if err != nil {
-				color.Red("unexpected error while running your app. Please try again later or contact hello@asknestor.me\n", err)
-			}
-
-			line.AppendHistory(command)
-
-			if output.Logs != "" {
-				color.Yellow(output.Logs)
-			}
-
-			for _, send := range output.ToSend {
-				fmt.Println(send)
-			}
-			for _, reply := range output.ToReply {
-				fmt.Printf("<@user>: %s\n", reply)
+			default:
+				output := exec.Output{}
+				err := output.Exec(&a, l, command)
+				if err != nil {
+					color.Red("unexpected error while running your app. Please try again later or contact hello@asknestor.me\n", err)
+				}
+				if output.Logs != "" {
+					color.Yellow(output.Logs)
+				}
+				for _, send := range output.ToSend {
+					fmt.Println(send)
+				}
+				for _, reply := range output.ToReply {
+					fmt.Printf("<@user>: %s\n", reply)
+				}
 			}
 		}
 	}

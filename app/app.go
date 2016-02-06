@@ -18,6 +18,7 @@ import (
 
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/fatih/color"
 	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/jpillora/archive"
+	"github.com/zerobotlabs/nestor-cli/Godeps/_workspace/src/github.com/olekukonko/tablewriter"
 	"github.com/zerobotlabs/nestor-cli/errors"
 	"github.com/zerobotlabs/nestor-cli/login"
 	"github.com/zerobotlabs/nestor-cli/nestorclient"
@@ -80,6 +81,62 @@ func (a *App) Hydrate(loginInfo *login.LoginInfo) error {
 	}
 
 	return nil
+}
+
+func (a *App) UpdateEnv(l *login.LoginInfo, key string, val string) (string, error) {
+	params := url.Values{
+		"Authorization":                  []string{l.Token},
+		"app[environment_hash][][name]":  []string{key},
+		"app[environment_hash][][value]": []string{val},
+	}
+	responseEnv := map[string]string{}
+
+	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps/%d/update_environment", l.DefaultTeamId, a.Id), "PATCH", params, 200)
+	err = json.Unmarshal([]byte(response), &responseEnv)
+
+	if err != nil {
+		return "", err
+	}
+
+	return responseEnv[key], err
+}
+
+func (a *App) GetEnv(l *login.LoginInfo, key string) (*tablewriter.Table, error) {
+	params := url.Values{
+		"Authorization": []string{l.Token},
+	}
+	responseEnv := map[string]string{}
+
+	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps/%d/environment", l.DefaultTeamId, a.Id), "GET", params, 200)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal([]byte(response), &responseEnv)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return a.formattedEnv(responseEnv, key), err
+}
+
+func (a *App) formattedEnv(wholeEnv map[string]string, key string) *tablewriter.Table {
+	var elems [][]string
+
+	if key == "" {
+		for k, v := range wholeEnv {
+			elems = append(elems, []string{k, v})
+		}
+	} else {
+		elems = [][]string{[]string{key, wholeEnv[key]}}
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Key", "Value"})
+	table.SetBorder(false)
+	table.AppendBulk(elems)
+
+	return table
 }
 
 func (a *App) UploadUrl(loginInfo *login.LoginInfo) (*url.URL, error) {
