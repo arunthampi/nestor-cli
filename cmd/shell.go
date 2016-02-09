@@ -151,10 +151,7 @@ func runShell(cmd *cobra.Command, args []string) {
 					color.Yellow(output.Logs)
 				}
 				for _, send := range output.ToSend {
-					fmt.Println(send)
-				}
-				for _, reply := range output.ToReply {
-					fmt.Printf("<@user>: %s\n", reply)
+					fmt.Println(send.ToString())
 				}
 			}
 		}

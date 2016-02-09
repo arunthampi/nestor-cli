@@ -13,13 +13,29 @@ import (
 	"github.com/zerobotlabs/nestor-cli/login"
 )
 
+type Response struct {
+	Strings []string `json:"strings"`
+	Reply   bool     `json:"reply"`
+}
+
+func (r Response) ToString() string {
+	output := []string{}
+	for _, s := range r.Strings {
+		if r.Reply == true {
+			s = fmt.Sprintf("<@user>: %s", s)
+		}
+		output = append(output, s)
+	}
+
+	return strings.Join(output, "\n")
+}
+
 type Output struct {
-	Heartbeat bool     `json:"heartbeat"`
-	Error     string   `json:"error"`
-	RequestId string   `json:"request_id"`
-	Logs      string   `json:"logs"`
-	ToSend    []string `json:"to_send"`
-	ToReply   []string `json:"to_reply"`
+	Heartbeat bool        `json:"heartbeat"`
+	Error     string      `json:"error"`
+	RequestId string      `json:"request_id"`
+	Logs      string      `json:"logs"`
+	ToSend    []*Response `json:"to_send"`
 }
 
 var host string = "http://localhost:5400"
