@@ -16,6 +16,7 @@ package cmd
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"path"
 
@@ -105,12 +106,12 @@ func runSave(cmd *cobra.Command, args []string) {
 	color.Green("+ Saving app to Nestor...\n")
 	err = a.SaveToNestor(l)
 	if err != nil {
-		color.Green("- Error while saving app to nestor: %+v\n", err)
+		color.Red("- Error while saving app to nestor: %+v\n", err)
 		os.Exit(1)
 	}
 
 	color.Green("+ Successfully saved app to Nestor!\n")
-	color.Green("\nYou can test your app by running `nestor shell`\n")
+	fmt.Printf("\nYou can test your app by running `nestor shell`\n")
 }
 
 func init() {
