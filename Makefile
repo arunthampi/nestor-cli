@@ -13,6 +13,10 @@ build: clean
 	@echo "$(OK_COLOR)==> Building revision $(VERSION)...$(NO_COLOR)"
 	@script/build $(APP) $(VERSION)
 
+prod: clean
+	@echo "$(OK_COLOR)==> Building revision $(VERSION)...$(NO_COLOR)"
+	@script/prod $(APP) $(VERSION)
+
 format:
 	go fmt ./...
 
@@ -26,4 +30,4 @@ release:
 install_equinox:
 	@script/install_equinox $(VERSION)
 
-.PHONY: all build clean test release install_equinox test
+.PHONY: all build clean test release install_equinox test prod
