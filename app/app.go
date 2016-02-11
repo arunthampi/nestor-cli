@@ -294,18 +294,21 @@ func (a *App) SaveToNestor(l *login.LoginInfo) error {
 	var response string
 	var err error
 
-	envKeysPayload, err := json.Marshal(a.EnvironmentKeys)
-	if err != nil {
-		return err
+	params := url.Values{
+		"Authorization":   []string{l.Token},
+		"app[name]":       []string{a.Name},
+		"app[permalink]":  []string{a.Permalink},
+		"app[upload_key]": []string{a.UploadKey},
+		"app[sha_256]":    []string{a.LocalSha256},
 	}
 
-	params := url.Values{
-		"Authorization":         []string{l.Token},
-		"app[name]":             []string{a.Name},
-		"app[permalink]":        []string{a.Permalink},
-		"app[upload_key]":       []string{a.UploadKey},
-		"app[sha_256]":          []string{a.LocalSha256},
-		"app[environment_keys]": []string{string(envKeysPayload)},
+	if len(a.EnvironmentKeys) > 0 {
+		envKeysPayload, err := json.Marshal(a.EnvironmentKeys)
+		if err != nil {
+			return err
+		}
+
+		params.Set("app[environment_keys]", string(envKeysPayload))
 	}
 
 	// If the app hasn't been created yet, then create it, otherwise update it
