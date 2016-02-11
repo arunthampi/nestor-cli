@@ -318,6 +318,10 @@ func (a *App) SaveToNestor(l *login.LoginInfo) error {
 		response, err = nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps/%d", l.DefaultTeamId, a.Id), "PATCH", params, 200)
 	}
 
+	if err != nil {
+		return errors.UnexpectedServerError
+	}
+
 	if err = json.Unmarshal([]byte(response), &returnedApp); err != nil {
 		return errors.UnexpectedServerError
 	}
