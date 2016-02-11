@@ -17,7 +17,7 @@ exports.handle = function(event, ctx) {
 
   if(missingEnv.length > 0) {
     ctx.succeed({
-      to_reply: ["You need to set the following environment variables: " + missingEnv.join(', ')]
+      to_send: [{strings: ["You need to set the following environment variables: " + missingEnv.join(', ')], reply: true}]
     });
   } else {
     for(var envProp in event.__nestor_env) {
