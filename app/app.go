@@ -32,7 +32,7 @@ type App struct {
 	Permalink       string          `json:"permalink"`
 	Public          bool            `json:"public"`
 	EnvironmentKeys map[string]bool `json:"environment_keys"`
-	RemoteSha256    string          `json:"sha_256"`
+	RemoteSha256    string          `json:"latest_sha_256"`
 	GitRevision     string          `json:"git_revision"`
 	LocalSha256     string
 	UploadKey       string
