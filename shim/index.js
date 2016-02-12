@@ -29,7 +29,13 @@ exports.handle = function(event, ctx) {
                     {
                       room: relaxEvent.channel_uid
                     });
+
+    if(relaxEvent.im == true) {
+      relaxEvent.text = "<@" + relaxEvent.relax_bot_uid + ">: " + relaxEvent.text;
+    }
+
     message = new TextMessage(user, relaxEvent.text);
+
     robot = new Robot(relaxEvent.team_uid, relaxEvent.relax_bot_uid, event.__debugMode);
 
     require('script')(robot);
