@@ -34,6 +34,13 @@ var deployCmd = &cobra.Command{
 	Run:   runDeploy,
 }
 
+var latestDeploy bool = false
+
+func init() {
+	f := deployCmd.Flags()
+	f.BoolVarP(&latestDeploy, "latest", "l", false, "Latest Version")
+}
+
 func runDeploy(cmd *cobra.Command, args []string) {
 	var l *login.LoginInfo
 	var a app.App
@@ -77,35 +84,55 @@ func runDeploy(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	table := version.TableizeVersions(versions)
-	fmt.Printf("\n")
-	table.Render()
-	fmt.Printf("\n")
+	if latestDeploy {
+		pickedVersion := versions[0]
+		if pickedVersion.CurrentlyDeployed {
+			color.Green("Version %s already deployed. Nothing to do here\n", pickedVersion.Ref)
+		} else {
+			err = pickedVersion.Deploy(a, l)
 
-	ok := false
-	intIndex := 0
+			if err != nil {
+				color.Red("Error deploying %s. Please try again later or contact hello@asknestor.me\n", pickedVersion.Ref)
+				os.Exit(1)
+			}
 
-	for !ok {
-		index, promptErr := prompt.Basic(fmt.Sprintf("Pick a version to deploy (1-%d): ", len(versions)), true)
-		if promptErr != nil {
-			os.Exit(1)
+			color.Green("Deployed version %s successfully\n", pickedVersion.Ref)
+		}
+	} else {
+		table := version.TableizeVersions(versions)
+		fmt.Printf("\n")
+		table.Render()
+		fmt.Printf("\n")
+
+		ok := false
+		intIndex := 0
+
+		for !ok {
+			index, promptErr := prompt.Basic(fmt.Sprintf("Pick a version to deploy (1-%d): ", len(versions)), true)
+			if promptErr != nil {
+				os.Exit(1)
+			}
+
+			intIndex, err = strconv.Atoi(index)
+			if err == nil && intIndex > 0 && intIndex <= len(versions) {
+				ok = true
+			}
 		}
 
-		intIndex, err = strconv.Atoi(index)
-		if err == nil && intIndex > 0 && intIndex <= len(versions) {
-			ok = true
+		pickedVersion := versions[intIndex-1]
+		if pickedVersion.CurrentlyDeployed {
+			color.Green("Version %s already deployed. Nothing to do here\n", pickedVersion.Ref)
+		} else {
+			err = pickedVersion.Deploy(a, l)
+
+			if err != nil {
+				color.Red("Error deploying %s. Please try again later or contact hello@asknestor.me\n", pickedVersion.Ref)
+				os.Exit(1)
+			}
+
+			color.Green("Deployed version %s successfully\n", pickedVersion.Ref)
 		}
 	}
-
-	pickedVersion := versions[intIndex-1]
-	err = pickedVersion.Deploy(a, l)
-
-	if err != nil {
-		color.Red("Error deploying %s. Please try again later or contact hello@asknestor.me\n", pickedVersion.Ref)
-		os.Exit(1)
-	}
-
-	color.Green("Deployed version %s successfully\n", pickedVersion.Ref)
 }
 
 func init() {
