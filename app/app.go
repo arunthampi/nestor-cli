@@ -315,7 +315,7 @@ func (a *App) SaveToNestor(l *login.LoginInfo) error {
 	if a.Id == 0 {
 		response, err = nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps", l.DefaultTeamId), "POST", params, 201)
 	} else {
-		response, err = nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps/%d", l.DefaultTeamId, a.Id), "PATCH", params, 200)
+		response, err = nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps/%s", l.DefaultTeamId, a.Permalink), "PATCH", params, 200)
 	}
 
 	if err != nil {
