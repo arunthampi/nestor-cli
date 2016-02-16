@@ -3,6 +3,7 @@ var Robot = _ref.Robot;
 var TextMessage = _ref.TextMessage;
 var User = _ref.User;
 var NestorAdapter = _ref.NestorAdapter;
+var Response = _ref.Response;
 
 exports.handle = function(event, ctx) {
   var missingEnv = [];
@@ -15,9 +16,16 @@ exports.handle = function(event, ctx) {
     }
   }
 
+  var robot = new Robot(relaxEvent.team_uid, relaxEvent.relax_bot_uid, event.__debugMode);
+
   if(missingEnv.length > 0) {
-    ctx.succeed({
-      to_send: [{strings: ["You need to set the following environment variables: " + missingEnv.join(', ')], reply: true}]
+    var strings = ["You need to set the following environment variables: " + missingEnv.join(', ')];
+    var response = new Response(robot);
+
+    response.reply(strings, function() {
+      ctx.succeed({
+        to_send: robot.toSend
+      });
     });
   } else {
     for(var envProp in event.__nestor_env) {
@@ -35,8 +43,6 @@ exports.handle = function(event, ctx) {
     }
 
     message = new TextMessage(user, relaxEvent.text);
-
-    robot = new Robot(relaxEvent.team_uid, relaxEvent.relax_bot_uid, event.__debugMode);
 
     require('script')(robot);
 
