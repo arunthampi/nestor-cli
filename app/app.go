@@ -85,13 +85,13 @@ func (a *App) Hydrate(loginInfo *login.LoginInfo) error {
 
 func (a *App) UpdateEnv(l *login.LoginInfo, key string, val string) (string, error) {
 	params := url.Values{
-		"Authorization":                  []string{l.Token},
-		"app[environment_hash][][name]":  []string{key},
-		"app[environment_hash][][value]": []string{val},
+		"Authorization":                   []string{l.Token},
+		"team[environment_hash][][name]":  []string{key},
+		"team[environment_hash][][value]": []string{val},
 	}
 	responseEnv := map[string]string{}
 
-	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps/%d/update_environment", l.DefaultTeamId, a.Id), "PATCH", params, 200)
+	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/update_environment", l.DefaultTeamId), "PATCH", params, 200)
 	err = json.Unmarshal([]byte(response), &responseEnv)
 
 	if err != nil {
@@ -107,7 +107,7 @@ func (a *App) GetEnv(l *login.LoginInfo, key string) (*tablewriter.Table, error)
 	}
 	responseEnv := map[string]string{}
 
-	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps/%d/environment", l.DefaultTeamId, a.Id), "GET", params, 200)
+	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/environment", l.DefaultTeamId), "GET", params, 200)
 	if err != nil {
 		return nil, err
 	}
