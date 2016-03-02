@@ -9,6 +9,6 @@ export RELEASE_APP_NAME=nestor-prod
 rm -f "$BUILD_DIR/$APP"
 mkdir -p "$BUILD_DIR"
 
-go build -ldflags="-X github.com/zerobotlabs/nestor-cli/cmd.version=${VERSION} -X github.com/zerobotlabs/nestor-cli/exec.host=https://exec.asknestor.me -X github.com/zerobotlabs/nestor-cli/nestorclient.host=https://v2.asknestor.me" -x -v -o $BUILD_DIR/$RELEASE_APP_NAME github.com/zerobotlabs/nestor-cli
+go build -ldflags="-X github.com/zerobotlabs/nestor-cli/cmd.version=${VERSION} -X github.com/zerobotlabs/nestor-cli/exec.host=https://exec.asknestor.me -X github.com/zerobotlabs/nestor-cli/nestorclient.host=https://www.asknestor.me" -x -v -o $BUILD_DIR/$RELEASE_APP_NAME github.com/zerobotlabs/nestor-cli
 
 echo "Binary built successfully: $BUILD_DIR/$RELEASE_APP_NAME"
