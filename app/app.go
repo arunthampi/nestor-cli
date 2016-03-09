@@ -26,14 +26,14 @@ import (
 )
 
 type App struct {
-	Id              int64           `json:"id"`
-	Name            string          `json:"name"`
-	Description     string          `json:"description"`
-	Permalink       string          `json:"permalink"`
-	Public          bool            `json:"public"`
-	EnvironmentKeys map[string]bool `json:"environment_keys"`
-	RemoteSha256    string          `json:"latest_sha_256"`
-	GitRevision     string          `json:"git_revision"`
+	Id              int64                  `json:"id"`
+	Name            string                 `json:"name"`
+	Description     string                 `json:"description"`
+	Permalink       string                 `json:"permalink"`
+	Public          bool                   `json:"public"`
+	EnvironmentKeys map[string]interface{} `json:"environment_keys"`
+	RemoteSha256    string                 `json:"latest_sha_256"`
+	GitRevision     string                 `json:"git_revision"`
 	LocalSha256     string
 	UploadKey       string
 	ManifestPath    string
@@ -50,7 +50,7 @@ func (a *App) ParseManifest() error {
 		return fmt.Errorf("Error reading nestor.json file: %s", a.ManifestPath)
 	} else {
 		if err = json.Unmarshal([]byte(contents), a); err != nil {
-			fmt.Errorf("Error reading nestor.json file: %s", a.ManifestPath)
+			return fmt.Errorf("Error reading nestor.json file: %s", a.ManifestPath)
 			os.Exit(1)
 		}
 	}
@@ -64,6 +64,8 @@ func (a *App) ParseManifest() error {
 }
 
 func (a *App) Hydrate(loginInfo *login.LoginInfo) error {
+	var appFromServer App
+
 	params := url.Values{
 		"Authorization":  []string{loginInfo.Token},
 		"app[permalink]": []string{a.Permalink},
@@ -75,10 +77,13 @@ func (a *App) Hydrate(loginInfo *login.LoginInfo) error {
 		return errors.UnexpectedServerError
 	}
 
-	if err = json.Unmarshal([]byte(response), a); err != nil {
+	if err = json.Unmarshal([]byte(response), &appFromServer); err != nil {
 		// If JSON parsing fails that means it's a server error too
 		return errors.UnexpectedServerError
 	}
+
+	a.Id = appFromServer.Id
+	a.RemoteSha256 = appFromServer.RemoteSha256
 
 	return nil
 }
@@ -295,11 +300,12 @@ func (a *App) SaveToNestor(l *login.LoginInfo) error {
 	var err error
 
 	params := url.Values{
-		"Authorization":   []string{l.Token},
-		"app[name]":       []string{a.Name},
-		"app[permalink]":  []string{a.Permalink},
-		"app[upload_key]": []string{a.UploadKey},
-		"app[sha_256]":    []string{a.LocalSha256},
+		"Authorization":    []string{l.Token},
+		"app[name]":        []string{a.Name},
+		"app[description]": []string{a.Description},
+		"app[permalink]":   []string{a.Permalink},
+		"app[upload_key]":  []string{a.UploadKey},
+		"app[sha_256]":     []string{a.LocalSha256},
 	}
 
 	if len(a.EnvironmentKeys) > 0 {
