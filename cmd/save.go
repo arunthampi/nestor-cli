@@ -112,6 +112,7 @@ func runSave(cmd *cobra.Command, args []string) {
 
 	color.Green("+ Successfully saved app to Nestor!\n")
 	fmt.Printf("\nYou can test your app by running `nestor shell`\n")
+	fmt.Printf("To deploy your app to Slack, run `nestor deploy --latest`\n")
 }
 
 func init() {
