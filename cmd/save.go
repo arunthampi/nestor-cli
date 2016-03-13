@@ -29,7 +29,7 @@ import (
 // saveCmd represents the save command
 var saveCmd = &cobra.Command{
 	Use:   "save",
-	Short: "Saves your app to Nestor",
+	Short: "Saves your Power to Nestor",
 	Run:   runSave,
 }
 
@@ -62,25 +62,25 @@ func runSave(cmd *cobra.Command, args []string) {
 	// We are ignoring the error for now but at some point we will have to show an error that is not annoying
 	err = a.Hydrate(l)
 	if err != nil {
-		color.Red("- Error fetching details for app\n")
+		color.Red("- Error fetching details for power\n")
 	}
 
 	color.Green("+ Building deployment artifact...\n")
 	err = a.BuildArtifact()
 	if err != nil {
-		color.Red("- Error while building deployment artifact for your app\n")
+		color.Red("- Error while building deployment artifact for your power\n")
 	}
 
 	// Check if you need to do coffee compilation
 	err = a.CompileCoffeescript()
 	if err != nil {
-		color.Red("- There was an error compiling coffeescript in your app\n")
+		color.Red("- There was an error compiling coffeescript in your power\n")
 		os.Exit(1)
 	}
 
 	err = a.CalculateLocalSha256()
 	if err != nil {
-		color.Red("- There was an error calculating whether your app needs to be uploaded\n")
+		color.Red("- There was an error calculating whether your power needs to be uploaded\n")
 		os.Exit(1)
 	}
 
@@ -88,7 +88,7 @@ func runSave(cmd *cobra.Command, args []string) {
 		color.Green("+ Generating zip...\n")
 		zip, err := a.ZipBytes()
 		if err != nil {
-			color.Red("- Error creating a zip of your app's deployment artifact\n")
+			color.Red("- Error creating a zip of your power's deployment artifact\n")
 			os.Exit(1)
 		}
 
@@ -103,16 +103,17 @@ func runSave(cmd *cobra.Command, args []string) {
 	}
 
 	// Make API call to Nestor with contents from JSON file along with S3 URL so that the API can create a functioning bot app
-	color.Green("+ Saving app to Nestor...\n")
+	color.Green("+ Saving power to Nestor...\n")
 	err = a.SaveToNestor(l)
 	if err != nil {
-		color.Red("- Error while saving app to nestor: %+v\n", err)
+		color.Red("- Error while saving power to nestor: %+v\n", err)
 		os.Exit(1)
 	}
 
-	color.Green("+ Successfully saved app to Nestor!\n")
-	fmt.Printf("\nYou can test your app by running `nestor shell`\n")
-	fmt.Printf("To deploy your app to Slack, run `nestor deploy --latest`\n")
+	color.Green("+ Successfully saved power to Nestor!\n")
+
+	fmt.Printf("\nYou can test your power by running `nestor shell`\n")
+	fmt.Printf("To deploy your power to Slack, run `nestor deploy --latest`\n")
 }
 
 func init() {

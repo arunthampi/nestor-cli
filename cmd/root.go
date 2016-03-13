@@ -27,8 +27,8 @@ var cfgFile string
 // This represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "nestor",
-	Short: "nestor lets you Create, Debug and Deploy Bot Apps at https://www.asknestor.me",
-	Long:  "nestor lets you Create, Debug and Deploy Bot Apps at https://www.asknestor.me",
+	Short: "nestor lets you Create, Debug and Deploy Bot Powers at https://www.asknestor.me",
+	Long:  "nestor lets you Create, Debug and Deploy Bot Powers at https://www.asknestor.me",
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },

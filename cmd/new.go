@@ -32,7 +32,7 @@ import (
 // newCmd represents the new command
 var newCmd = &cobra.Command{
 	Use:   "new",
-	Short: "Create a new app for Nestor",
+	Short: "Create a new Power for Nestor",
 	Run:   runNew,
 }
 
@@ -57,7 +57,7 @@ type AppNestorJson struct {
 
 func runNew(cmd *cobra.Command, args []string) {
 	if len(args) != 1 {
-		color.Red("Usage: nestor new <app-name>")
+		color.Red("Usage: nestor new <power-name>")
 		os.Exit(1)
 	}
 
@@ -66,20 +66,20 @@ func runNew(cmd *cobra.Command, args []string) {
 
 	currentDir, err := os.Getwd()
 	if err != nil {
-		color.Red("Unexpected error occurred while creating your app: %+v", err)
+		color.Red("Unexpected error occurred while creating your power: %+v", err)
 		os.Exit(1)
 	}
 
 	base := path.Join(currentDir, permalink)
 	if _, err = os.Stat(base); err == nil {
-		color.Red("An app with this name already exists in this directory, pick another name or another directory to create your app")
+		color.Red("A power with this name already exists in this directory, pick another name or another directory to create your power")
 		os.Exit(1)
 	}
 
 	color.Green("+ Creating directory...")
 	err = os.Mkdir(base, 0755)
 	if err != nil {
-		color.Red("- Unexpected error occurred while creating your app: %+v", err)
+		color.Red("- Unexpected error occurred while creating your power: %+v", err)
 		os.Exit(1)
 	}
 
@@ -94,7 +94,7 @@ func runNew(cmd *cobra.Command, args []string) {
 	npmInitCommand.Dir = base
 	err = npmInitCommand.Run()
 	if err != nil {
-		color.Red("- Unexpected Error while creating package.json for your app")
+		color.Red("- Unexpected Error while creating package.json for your power")
 		os.Exit(1)
 	}
 
@@ -156,6 +156,6 @@ func runNew(cmd *cobra.Command, args []string) {
 		os.Exit(1)
 	}
 
-	color.Green("Successfully created app %s here: %s", appName, base)
-	fmt.Printf("\ncd %s and run `nestor save` and `nestor shell` to start working on your app\n", base)
+	color.Green("Successfully created power %s here: %s", appName, base)
+	fmt.Printf("\ncd %s and run `nestor save` and `nestor shell` to start working on your power\n", base)
 }

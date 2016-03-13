@@ -30,7 +30,7 @@ import (
 // deployCmd represents the deploy command
 var deployCmd = &cobra.Command{
 	Use:   "deploy",
-	Short: "Deploy a version of your app to Nestor",
+	Short: "Deploy a version of your Power to Nestor",
 	Run:   runDeploy,
 }
 
@@ -70,17 +70,17 @@ func runDeploy(cmd *cobra.Command, args []string) {
 	// We are ignoring the error for now but at some point we will have to show an error that is not annoying
 	err = a.Hydrate(l)
 	if err != nil {
-		color.Red("Error fetching details for app\n")
+		color.Red("Error fetching details for this power\n")
 	}
 
 	if a.Id == 0 {
-		color.Red("You haven't saved your app yet. Run `nestor save` before you can deploy your app\n")
+		color.Red("You haven't saved your power yet. Run `nestor save` before you can deploy your power\n")
 		os.Exit(1)
 	}
 
 	versions, err := version.FetchVersions(a, l)
 	if err != nil {
-		color.Red("Error fetching versions for your app\n")
+		color.Red("Error fetching versions for your power\n")
 		os.Exit(1)
 	}
 

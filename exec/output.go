@@ -45,7 +45,7 @@ func (o *Output) Exec(app *app.App, l *login.LoginInfo, message string) error {
 		"message": []string{message},
 	}
 
-	urlStr := fmt.Sprintf("%s/teams/%s/apps/%d/exec", host, l.DefaultTeamId, app.Id)
+	urlStr := fmt.Sprintf("%s/teams/%s/powers/%d/exec", host, l.DefaultTeamId, app.Id)
 	r, err := http.NewRequest("POST", urlStr, strings.NewReader(params.Encode()))
 	if err != nil {
 		return err

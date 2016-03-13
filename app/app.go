@@ -71,7 +71,7 @@ func (a *App) Hydrate(loginInfo *login.LoginInfo) error {
 		"app[permalink]": []string{a.Permalink},
 	}
 
-	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps/search", loginInfo.DefaultTeamId), "GET", params, 200)
+	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/powers/search", loginInfo.DefaultTeamId), "GET", params, 200)
 
 	if err != nil {
 		return errors.UnexpectedServerError
@@ -154,7 +154,7 @@ func (a *App) UploadUrl(loginInfo *login.LoginInfo) (*url.URL, error) {
 	params := url.Values{
 		"Authorization": []string{loginInfo.Token},
 	}
-	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps/issue_upload_url", loginInfo.DefaultTeamId), "POST", params, 200)
+	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/powers/issue_upload_url", loginInfo.DefaultTeamId), "POST", params, 200)
 	if err != nil {
 		return nil, errors.UnexpectedServerError
 	}
@@ -319,9 +319,9 @@ func (a *App) SaveToNestor(l *login.LoginInfo) error {
 
 	// If the app hasn't been created yet, then create it, otherwise update it
 	if a.Id == 0 {
-		response, err = nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps", l.DefaultTeamId), "POST", params, 201)
+		response, err = nestorclient.CallAPI(fmt.Sprintf("/teams/%s/powers", l.DefaultTeamId), "POST", params, 201)
 	} else {
-		response, err = nestorclient.CallAPI(fmt.Sprintf("/teams/%s/apps/%s", l.DefaultTeamId, a.Permalink), "PATCH", params, 200)
+		response, err = nestorclient.CallAPI(fmt.Sprintf("/teams/%s/powers/%s", l.DefaultTeamId, a.Permalink), "PATCH", params, 200)
 	}
 
 	if err != nil {

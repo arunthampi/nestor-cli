@@ -88,11 +88,11 @@ func runShell(cmd *cobra.Command, args []string) {
 	// We are ignoring the error for now but at some point we will have to show an error that is not annoying
 	err = a.Hydrate(l)
 	if err != nil {
-		color.Red("Error fetching details for app\n")
+		color.Red("Error fetching details for power\n")
 	}
 
 	if a.Id == 0 {
-		color.Red("You haven't saved your app yet. Run `nestor save` before you can debug your app\n")
+		color.Red("You haven't saved your power yet. Run `nestor save` before you can test your power\n")
 		os.Exit(1)
 	}
 
@@ -126,7 +126,7 @@ func runShell(cmd *cobra.Command, args []string) {
 				matches := setEnvPattern.FindAllStringSubmatch(command, -1)
 				resp, err := a.UpdateEnv(l, matches[0][1], matches[0][2])
 				if err != nil {
-					color.Red("There was an error setting environment variable %s for your app", matches[0][1])
+					color.Red("There was an error setting environment variable %s for your power", matches[0][1])
 				} else {
 					fmt.Printf("Set %s to %s\n", matches[0][1], resp)
 				}
@@ -134,7 +134,7 @@ func runShell(cmd *cobra.Command, args []string) {
 				matches := getEnvPattern.FindAllStringSubmatch(command, -1)
 				table, err := a.GetEnv(l, matches[0][1])
 				if err != nil {
-					color.Red("There was an error getting environment variable %s for your app", matches[0][1])
+					color.Red("There was an error getting environment variable %s for your power", matches[0][1])
 				} else {
 					table.Render()
 					fmt.Printf("\n")
@@ -145,7 +145,7 @@ func runShell(cmd *cobra.Command, args []string) {
 				output := exec.Output{}
 				err := output.Exec(&a, l, command)
 				if err != nil {
-					color.Red("unexpected error while running your app. Please try again later or contact hello@asknestor.me\n", err)
+					color.Red("unexpected error while running your power. Please try again later or contact hello@asknestor.me\n", err)
 				}
 				if output.Logs != "" {
 					color.Yellow(output.Logs)
@@ -163,7 +163,7 @@ func runShell(cmd *cobra.Command, args []string) {
 // shellCmd represents the shell command
 var shellCmd = &cobra.Command{
 	Use:   "shell",
-	Short: "Open an interactive shell to debug your Nestor app",
+	Short: "Open an interactive shell to debug your Nestor Power",
 	Run:   runShell,
 }
 
