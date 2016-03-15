@@ -36,6 +36,7 @@ type Output struct {
 	RequestId string      `json:"request_id"`
 	Logs      string      `json:"logs"`
 	ToSend    []*Response `json:"to_send"`
+	ToSuggest []string    `json:"to_suggest"`
 }
 
 var host string = "http://localhost:5400"

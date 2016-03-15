@@ -150,8 +150,13 @@ func runShell(cmd *cobra.Command, args []string) {
 				if output.Logs != "" {
 					color.Yellow(output.Logs)
 				}
-				for _, send := range output.ToSend {
-					fmt.Println(send.ToString())
+				if len(output.ToSuggest) > 0 {
+					suggestion := output.ToSuggest[0]
+					fmt.Println("Oops, did you mean `" + suggestion + "`?")
+				} else {
+					for _, send := range output.ToSend {
+						fmt.Println(send.ToString())
+					}
 				}
 			}
 		}
