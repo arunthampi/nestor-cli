@@ -30,6 +30,7 @@ exports.handle = function(event, ctx) {
   robot.receive(message, function(done) {
     ctx.succeed({
       to_send: robot.toSend,
+      to_suggest: (robot.toSuggest && robot.toSuggest.length > 0) ? robot.toSuggest : null
     });
   });
 }
