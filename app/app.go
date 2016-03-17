@@ -74,6 +74,10 @@ func (a *App) Hydrate(loginInfo *login.LoginInfo) error {
 	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/powers/search", loginInfo.DefaultTeamId), "GET", params, 200)
 
 	if err != nil {
+		if ne, ok := err.(nestorclient.NestorAPIError); ok {
+			return ne
+		}
+
 		return errors.UnexpectedServerError
 	}
 
@@ -97,8 +101,14 @@ func (a *App) UpdateEnv(l *login.LoginInfo, key string, val string) (string, err
 	responseEnv := map[string]string{}
 
 	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/update_environment", l.DefaultTeamId), "PATCH", params, 200)
-	err = json.Unmarshal([]byte(response), &responseEnv)
+	if err != nil {
+		if ne, ok := err.(nestorclient.NestorAPIError); ok {
+			return "", ne
+		}
+		return "", nil
+	}
 
+	err = json.Unmarshal([]byte(response), &responseEnv)
 	if err != nil {
 		return "", err
 	}
@@ -114,6 +124,9 @@ func (a *App) GetEnv(l *login.LoginInfo, key string) (*tablewriter.Table, error)
 
 	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/environment", l.DefaultTeamId), "GET", params, 200)
 	if err != nil {
+		if ne, ok := err.(nestorclient.NestorAPIError); ok {
+			return nil, ne
+		}
 		return nil, err
 	}
 	err = json.Unmarshal([]byte(response), &responseEnv)
@@ -156,6 +169,9 @@ func (a *App) UploadUrl(loginInfo *login.LoginInfo) (*url.URL, error) {
 	}
 	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/powers/issue_upload_url", loginInfo.DefaultTeamId), "POST", params, 200)
 	if err != nil {
+		if ne, ok := err.(nestorclient.NestorAPIError); ok {
+			return nil, ne
+		}
 		return nil, errors.UnexpectedServerError
 	}
 
@@ -325,6 +341,9 @@ func (a *App) SaveToNestor(l *login.LoginInfo) error {
 	}
 
 	if err != nil {
+		if ne, ok := err.(nestorclient.NestorAPIError); ok {
+			return ne
+		}
 		return errors.UnexpectedServerError
 	}
 

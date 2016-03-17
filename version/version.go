@@ -50,6 +50,9 @@ func FetchVersions(a app.App, l *login.LoginInfo) ([]Version, error) {
 
 	response, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/powers/%s/versions", l.DefaultTeamId, a.Permalink), "GET", params, 200)
 	if err != nil {
+		if ne, ok := err.(nestorclient.NestorAPIError); ok {
+			return nil, ne
+		}
 		return versions, err
 	}
 
@@ -74,6 +77,9 @@ func (v *Version) Deploy(a app.App, l *login.LoginInfo) error {
 
 	_, err := nestorclient.CallAPI(fmt.Sprintf("/teams/%s/powers/%s/deploys", l.DefaultTeamId, a.Permalink), "POST", params, 201)
 	if err != nil {
+		if ne, ok := err.(nestorclient.NestorAPIError); ok {
+			return ne
+		}
 		return err
 	}
 

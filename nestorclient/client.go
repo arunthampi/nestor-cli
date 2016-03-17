@@ -1,6 +1,7 @@
 package nestorclient
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -10,6 +11,20 @@ import (
 )
 
 var host string = "http://localhost:5000"
+
+type NestorAPIError struct {
+	Errors []string `json:"errors"`
+}
+
+func (e NestorAPIError) Error() string {
+	formattedErrors := []string{"Oops, encountered these errors:"}
+
+	for _, e1 := range e.Errors {
+		formattedErrors = append(formattedErrors, fmt.Sprintf("· %s", e1))
+	}
+
+	return strings.Join(formattedErrors, "\n")
+}
 
 func CallAPI(path string, method string, params url.Values, expectedStatusCode int) (string, error) {
 	urlStr, token := parseURLStringAndToken(path, method, params)
@@ -36,11 +51,16 @@ func CallAPI(path string, method string, params url.Values, expectedStatusCode i
 		if err != nil {
 			return "", err
 		} else {
-			if resp.StatusCode != expectedStatusCode {
-				return "", fmt.Errorf("Expected Status Code: %d, Got: %d\n", expectedStatusCode, resp.StatusCode)
-			} else {
-				return string(contents), err
+			var ne NestorAPIError
+			err := json.Unmarshal(contents, &ne)
+
+			if err == nil {
+				if len(ne.Errors) > 0 {
+					return "", ne
+				}
 			}
+
+			return string(contents), nil
 		}
 	}
 }

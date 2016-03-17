@@ -49,6 +49,9 @@ func GetTeams(loginInfo *login.LoginInfo) ([]Team, error) {
 	response, err := nestorclient.CallAPI("/teams", "GET", params, 200)
 
 	if err != nil {
+		if ne, ok := err.(nestorclient.NestorAPIError); ok {
+			return nil, ne
+		}
 		return nil, errors.UnexpectedServerError
 	}
 

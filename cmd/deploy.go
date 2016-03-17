@@ -92,7 +92,7 @@ func runDeploy(cmd *cobra.Command, args []string) {
 			err = pickedVersion.Deploy(a, l)
 
 			if err != nil {
-				color.Red("Error deploying %s. Please try again later or contact hello@asknestor.me\n", pickedVersion.Ref)
+				color.Red(err.Error())
 				os.Exit(1)
 			}
 

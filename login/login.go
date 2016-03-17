@@ -34,6 +34,9 @@ func Login(email string, password string) (*LoginInfo, error) {
 	response, err := nestorclient.CallAPI("/users/issue_token", "POST", params, 200)
 
 	if err != nil {
+		if ne, ok := err.(nestorclient.NestorAPIError); ok {
+			return nil, ne
+		}
 		return nil, errors.UnexpectedServerError
 	}
 
