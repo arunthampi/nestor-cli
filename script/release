@@ -8,7 +8,7 @@ echo "Installing $VERSION to $CHANNEL with EQUINOX_SIGNING_KEY_FILE"
 /usr/local/bin/equinox release \
 --version=$VERSION \
 --channel=$CHANNEL \
---platforms="darwin_amd64 linux_amd64" \
+--platforms="darwin_amd64 linux_amd64 windows_amd64" \
 --signing-key=$EQUINOX_SIGNING_KEY_FILE \
 --app=$EQUINOX_APP_ID \
 --token=$EQUINOX_CREDENTIAL \
