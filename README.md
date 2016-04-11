@@ -6,8 +6,8 @@ The Nestor CLI lets you create, debug and deploy Nestor Bot Powers.
 
 A Bot Power is functionality that you would like to add to
 [Nestor](https://www.asknestor.me). Examples of powers include
-[Github](https://www.asknestor.me/apps/github) and
-[Trello](https://www.asknestor.me/apps/trello). But what if you wanted
+[Github](https://www.asknestor.me/powers/github) and
+[Trello](https://www.asknestor.me/powers/trello). But what if you wanted
 to add your own?
 
 Nestor CLI comes to the rescue.
