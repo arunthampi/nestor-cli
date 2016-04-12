@@ -15,6 +15,7 @@ exports.handle = function(event, ctx) {
   var msg = new TextMessage(user);
   var robot = new Robot(relaxEvent.team_uid, relaxEvent.relax_bot_uid, event.__debugMode);
   robot.requiredEnv = event.__nestor_required_env;
+  robot.brain.mergeData(event.__nestor_brain);
 
   for(var envProp in event.__nestor_env) {
     process.env[envProp] = event.__nestor_env[envProp];
@@ -30,7 +31,8 @@ exports.handle = function(event, ctx) {
   robot.receive(message, function(done) {
     ctx.succeed({
       to_send: robot.toSend,
-      to_suggest: (robot.toSuggest && robot.toSuggest.length > 0) ? robot.toSuggest : null
+      to_suggest: (robot.toSuggest && robot.toSuggest.length > 0) ? robot.toSuggest : null,
+      brain: robot.brain.data._private
     });
   });
 }
