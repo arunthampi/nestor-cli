@@ -15,10 +15,16 @@ exports.handle = function(event, ctx) {
   var msg = new TextMessage(user);
   var robot = new Robot(relaxEvent.team_uid, relaxEvent.relax_bot_uid, event.__debugMode);
   robot.requiredEnv = event.__nestor_required_env;
+  // Preload Brain
   robot.brain.mergeData(event.__nestor_brain);
-
+  // Preload environment
   for(var envProp in event.__nestor_env) {
     process.env[envProp] = event.__nestor_env[envProp];
+  }
+  // Preload users
+  for(var i in event.__nestor_users) {
+    var user = event.__nestor_users[i];
+    robot.brain.userForId(user.id, user);
   }
 
   if(relaxEvent.im == true) {
