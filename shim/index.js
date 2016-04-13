@@ -23,8 +23,8 @@ exports.handle = function(event, ctx) {
   }
   // Preload users
   for(var i in event.__nestor_users) {
-    var user = event.__nestor_users[i];
-    robot.brain.userForId(user.id, user);
+    var u = event.__nestor_users[i];
+    robot.brain.userForId(u.id, u);
   }
 
   if(relaxEvent.im == true) {
