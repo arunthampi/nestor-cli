@@ -42,7 +42,7 @@ func init() {
 
 var defaultAppFile string = `
 module.exports = function(robot) {
-  robot.respond(/hello/, function(msg, done) {
+  robot.respond(/hello world/, function(msg, done) {
     msg.reply("hello back", done);
   });
 };
@@ -63,6 +63,7 @@ func runNew(cmd *cobra.Command, args []string) {
 
 	appName := strings.TrimSpace(args[0])
 	permalink := strings.ToLower(strings.Replace(appName, " ", "-", -1))
+	permalink = strings.ToLower(strings.Replace(permalink, ".", "-", -1))
 
 	currentDir, err := os.Getwd()
 	if err != nil {
